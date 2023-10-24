@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Rene Apps</string>
-    <string name="title_home">Beranda</string>
-    <string name="title_add">Tambah Cerita</string>
-    <string name="title_account">Akun ku</string>
+    <string name="title_home">Home</string>
+    <string name="title_add">Make Story</string>
+    <string name="title_account">My Account</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="signup">Daftar</string>
     <string name="login">Masuk</string>
     <string name="title_signup_page">Lengkapi data dirimu di bawah ini ya</string>
@@ -14,7 +16,7 @@
     <string name="logout">Keluar</string>
     <string name="text_desc">%s</string>
     <string name="text_desc_main">Memuat Data</string>
-    <string name="auth">Penulis</string>
+    <string name="auth">Author</string>
     <string name="addStory">Add Story\n</string>
     <string name="title_welcome_page">Selamat datang di Story App!</string>
     <string name="message_welcome_page">Abadikan aktivitas menarik mu bersama keluarga maupun sendiri! \n \n \t Buat dunia menjadi menarik dengan potret terbaik mu\n</string>
@@ -28,10 +30,11 @@
     <string name="desc_btn_galery">Tombol galeri</string>
     <string name="desc_btn_upload">Tombol upload</string>
     <string name="desc_img_login">Gambar fotografi</string>
+    <string name="title_activity_maps">MapsActivity</string>
     <string name="menu_1">maps</string>
     <string name="retry">Coba lagi</string>
-    <string name="start_point">Lokasi ku</string>
+    <string name="start_point">My location</string>
     <string name="user_name">user name</string>
-    <string name="language">Bahasa</string>
+    <string name="language">bahasa</string>
 
 </resources>
