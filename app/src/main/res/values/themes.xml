@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.ReneApps" parent="Theme.Material3.Light">
+        <!-- Status bar color. -->
+        <item name="colorSurface">@color/aureolin</item>
+        <item name="colorOnSurfaceVariant">@color/uranian_blue</item>
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/explode</item>
+        <item name="android:windowExitTransition">@android:transition/explode</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomNavigationView" parent="">
+        <item name="colorSurface">@color/aureolin</item>
+        <item name="colorOnSurfaceVariant">@color/uranian_blue</item>
+    </style>
+</resources>

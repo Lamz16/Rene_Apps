@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Story App</string>
+    <string name="signup">Daftar</string>
+    <string name="login">Masuk</string>
+    <string name="title_signup_page">Lengkapi data dirimu di bawah ini ya</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="message_login_page">Masukkan dulu datamu ya</string>
+    <string name="title_login_page">Mari mulai membuka jendela dunia dengan potret terbaikmu</string>
+    <string name="name">Nama</string>
+    <string name="logout">Keluar</string>
+    <string name="text_desc">%s</string>
+    <string name="text_desc_main">Memuat Data</string>
+    <string name="auth">Author</string>
+    <string name="addStory">Add Story\n</string>
+    <string name="title_welcome_page">Selamat datang di Story App!</string>
+    <string name="message_welcome_page">Abadikan aktivitas menarik mu bersama keluarga maupun sendiri! \n \n \t Buat dunia menjadi menarik dengan potret terbaik mu\n</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
+    <string name="description">Description</string>
+    <string name="upload">Upload</string>
+    <string name="empty_image_warning">Silakan masukkan berkas gambar terlebih dahulu.</string>
+    <string name="desc_img_story">Gambar Story</string>
+    <string name="desc_btn_camera">tombol kamera</string>
+    <string name="desc_btn_galery">Tombol galeri</string>
+    <string name="desc_btn_upload">Tombol upload</string>
+    <string name="desc_img_login">Gambar fotografi</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="menu_1">maps</string>
+    <string name="retry">Coba lagi</string>
+    <string name="start_point">Lokasi Ku</string>
+
+</resources>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/lavender"
+    android:orientation="vertical"
+    tools:context=".ui.account.AccountFragment">
+
+    <ImageButton
+        android:id="@+id/btn_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/white"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_logout" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="@string/user_name" />
+
+    <TextView
+        android:id="@+id/tv_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="18dp"
+        android:textStyle="italic"
+        android:gravity="center"
+        android:text="@string/user_name" />
+
+    <Button
+        android:id="@+id/language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="38dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/navy"
+        android:text="@string/language"/>
+
+
+</LinearLayout>
