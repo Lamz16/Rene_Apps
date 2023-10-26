@@ -1,11 +1,14 @@
 package com.lamz.reneapps.ui.add_story
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +28,7 @@ import com.lamz.reneapps.data.ResultState
 import com.lamz.reneapps.databinding.FragmentAddStoryBinding
 import com.lamz.reneapps.ui.MainActivity
 import com.lamz.reneapps.ui.ViewModelFactory
+import com.lamz.reneapps.ui.maps.MapsActivity
 
 class AddStoryFragment : Fragment(), OnMapReadyCallback {
 
@@ -32,6 +36,8 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
     private val viewModel by viewModels<AddStoryViewModel> {
         ViewModelFactory.getInstance(requireActivity())
     }
+    private lateinit var locationManager: LocationManager
+    private var gpsStatus: Boolean = false
 
     private val binding get() = _binding!!
     private var currentImageUri: Uri? = null
@@ -43,6 +49,8 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddStoryBinding.inflate(inflater, container, false)
+        locationManager =
+            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         return binding.root
     }
@@ -50,15 +58,19 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getSession().observe(viewLifecycleOwner) { user ->
-                EXTRA_TOKEN = user.token
-                binding.uploadButton.setOnClickListener { uploadStory() }
-            }
+            EXTRA_TOKEN = user.token
+            binding.uploadButton.setOnClickListener { getMyLastLocation() }
+        }
 
-            binding.galleryButton.setOnClickListener { startGallery() }
-            binding.cameraButton.setOnClickListener { startCamera() }
+        binding.galleryButton.setOnClickListener { startGallery() }
+        binding.cameraButton.setOnClickListener { startCamera() }
 
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+
+    }
+
+    override fun onMapReady(p0: GoogleMap) {
 
     }
 
@@ -103,7 +115,6 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-
     private fun showLoading(isLoading: Boolean) {
         binding.progressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
@@ -119,12 +130,14 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
             when {
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
                     // Precise location access granted.
-                    uploadStory()
+                    getMyLastLocation()
                 }
+
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
                     // Only approximate location access granted.
-                    uploadStory()
+                    getMyLastLocation()
                 }
+
                 else -> {
                     // No location access granted.
                 }
@@ -138,102 +151,130 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun getMyLastLocation() {
+        val shareLocation = binding.btnLocation
+        if (shareLocation.isChecked) {
+            if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+                checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+            ) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        uploadStory(location.latitude.toString(), location.longitude.toString())
+                        Log.d(
+                            "koordinat",
+                            "getMylastLocation: ${location.latitude}, ${location.longitude}  "
+                        )
+                    } else {
+                        gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+                        Toast.makeText(
+                            requireActivity(),
+                            "Please open turn on your gps and set your location",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        if (!gpsStatus) {
+                            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                        } else {
+                            val intents = Intent(requireContext(), MapsActivity::class.java)
+                            startActivity(intents)
+                        }
+                    }
+                }
+            } else {
+                requestPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+            }
+        } else if (!shareLocation.isChecked) {
+            uploadStory()
+        }
+
+    }
+
     private fun uploadStory() {
-        if     (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
-            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-        ){
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                if (location != null) {
+        currentImageUri?.let { uri ->
+            val imageFile = uriToFile(uri, requireContext()).reduceFileImage()
+            Log.d("Image File", "showImage: ${imageFile.path}")
+            val description = binding.edtDescription.text.toString()
 
-                    currentImageUri?.let { uri ->
-
-                        val imageFile = uriToFile(uri, requireContext()).reduceFileImage()
-                        Log.d("Image File", "showImage: ${imageFile.path}")
-                        val description = binding.edtDescription.text.toString()
-                        showLoading(true)
-                        val shareLocation = binding.btnLocation
-                        if (shareLocation.isChecked){
-                            viewModel.uploadImage(EXTRA_TOKEN, imageFile, description, location.latitude.toString(), location.longitude.toString())
-                            Log.d("My koordinat", "getMyLastLocation:${location.latitude}  ${location.longitude} ")
-                            viewModel.upload.observe(viewLifecycleOwner) { result ->
-                                if (result != null) {
-                                    when (result) {
-                                        is ResultState.Loading -> {
-                                            showLoading(true)
-                                        }
-
-                                        is ResultState.Success -> {
-                                            result.data.message.let { showToast(it) }
-                                            showLoading(false)
-                                            val intent = Intent(context, MainActivity::class.java)
-                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                            startActivity(intent)
-                                            activity?.finish()
-                                        }
-
-                                        is ResultState.Error -> {
-                                            showToast(result.error)
-                                            showLoading(false)
-                                        }
-                                    }
-                                }
-
-                            }
-                        }else {
-                            viewModel.uploadImage(EXTRA_TOKEN, imageFile, description)
-                            viewModel.upload.observe(viewLifecycleOwner) { result ->
-                                if (result != null) {
-                                    when (result) {
-                                        is ResultState.Loading -> {
-                                            showLoading(true)
-                                        }
-
-                                        is ResultState.Success -> {
-                                            result.data.message.let { showToast(it) }
-                                            showLoading(false)
-                                            val intent = Intent(context, MainActivity::class.java)
-                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                            startActivity(intent)
-                                            activity?.finish()
-                                        }
-
-                                        is ResultState.Error -> {
-                                            showToast(result.error)
-                                            showLoading(false)
-                                        }
-                                    }
-                                }
-
-                            }
+            viewModel.uploadImage(EXTRA_TOKEN, imageFile, description)
+            viewModel.upload.observe(viewLifecycleOwner) { result ->
+                if (result != null) {
+                    when (result) {
+                        is ResultState.Loading -> {
+                            showLoading(true)
                         }
 
+                        is ResultState.Success -> {
+                            result.data.message.let { showToast(it) }
+                            showLoading(false)
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            activity?.finish()
+                        }
 
-                    } ?: showToast(getString(R.string.empty_image_warning))
+                        is ResultState.Error -> {
+                            showToast(result.error)
+                            showLoading(false)
+                        }
+                    }
+                }
 
+            }
+        } ?: showToast(getString(R.string.empty_image_warning))
+    }
 
-                } else {
-                    Toast.makeText(
-                        requireActivity(),
-                        "Location is not found. Try Again",
-                        Toast.LENGTH_SHORT
-                    ).show()
+    private fun uploadStory(lat: String, lon: String) {
+
+        currentImageUri?.let { uri ->
+
+            val imageFile = uriToFile(uri, requireContext()).reduceFileImage()
+            Log.d("Image File", "showImage: ${imageFile.path}")
+            val description = binding.edtDescription.text.toString()
+            showLoading(true)
+
+            viewModel.uploadImage(
+                EXTRA_TOKEN,
+                imageFile,
+                description,
+                lat, lon
+            )
+            viewModel.upload.observe(viewLifecycleOwner) { result ->
+                if (result != null) {
+                    when (result) {
+                        is ResultState.Loading -> {
+                            showLoading(true)
+                        }
+
+                        is ResultState.Success -> {
+                            result.data.message.let { showToast(it) }
+                            showLoading(false)
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            activity?.finish()
+                        }
+
+                        is ResultState.Error -> {
+                            showToast(result.error)
+                            showLoading(false)
+                        }
+                    }
                 }
             }
-        } else {
-            requestPermissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
-        }
+
+        } ?: showToast(getString(R.string.empty_image_warning))
     }
 
     companion object {
-        private var EXTRA_TOKEN : String = "token"
+        private var EXTRA_TOKEN: String = "token"
     }
 
-    override fun onMapReady(p0: GoogleMap) {
 
-    }
 }

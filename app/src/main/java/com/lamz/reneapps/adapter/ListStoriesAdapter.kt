@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.lamz.reneapps.databinding.ItemStoryBinding
 import com.lamz.reneapps.response.ListStoryItem
 import com.lamz.reneapps.ui.detail.DetailActivity
+import com.lamz.reneapps.ui.maps.MapsActivity
 
 
 class ListStoriesAdapter : PagingDataAdapter<ListStoryItem, ListStoriesAdapter.MyViewHolder>(DIFF_CALLBACK) {
@@ -29,6 +30,11 @@ class ListStoriesAdapter : PagingDataAdapter<ListStoryItem, ListStoriesAdapter.M
                 val intentDetail = Intent(itemView.context, DetailActivity::class.java)
                 intentDetail.putExtra(DetailActivity.EXTRA_ID, listStory.id )
                 itemView.context.startActivity(intentDetail , ActivityOptionsCompat.makeSceneTransitionAnimation(itemView.context as Activity).toBundle())
+            }
+
+            binding.ivLocation.setOnClickListener {
+                val intent = Intent(itemView.context, MapsActivity::class.java)
+                itemView.context.startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(itemView.context as Activity).toBundle())
             }
         }
 

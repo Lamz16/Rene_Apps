@@ -12,7 +12,9 @@ object DataDummy {
                 "createdAt + $i",
                 "name $i",
                 "description $i",
+                33.000,
                 "id $i",
+                32.322
             )
             items.add(story)
         }

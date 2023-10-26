@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -24,6 +25,7 @@ import com.lamz.reneapps.databinding.ActivityMapsBinding
 import com.lamz.reneapps.ui.ViewModelFactory
 import com.lamz.reneapps.ui.welcome.WelcomeActivity
 
+@Suppress("DEPRECATION")
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
@@ -53,6 +55,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         getMyLocation()
         setMapStyle()
         addManyMarker()
+
+        binding.swipe.setOnRefreshListener {
+            getMyLocation()
+            setMapStyle()
+            addManyMarker()
+            Handler().postDelayed({
+                binding.swipe.isRefreshing = false
+            }, 2000)
+        }
     }
 
     private val boundsBuilder = LatLngBounds.Builder()
@@ -96,6 +107,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             is ResultState.Error -> {
 
                             }
+
                         }
                     }
                 }
@@ -103,6 +115,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
         }
+
+
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -136,5 +150,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         }
     }
+
+
 
 }
