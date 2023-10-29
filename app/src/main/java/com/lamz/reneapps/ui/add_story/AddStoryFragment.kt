@@ -180,12 +180,13 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
                             "Please open turn on your gps and set your location",
                             Toast.LENGTH_SHORT
                         ).show()
-                        if (!gpsStatus) {
+                        if (gpsStatus){
+                            val intent = Intent(requireContext(), MapsActivity::class.java)
+                            startActivity(intent)
+                        }
+                        else {
                             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
-                        } else {
-                            val intent = Intent(requireContext(), MapsActivity::class.java)
                             startActivity(intent)
                         }
                     }
