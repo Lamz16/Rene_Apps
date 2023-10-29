@@ -1,5 +1,7 @@
 package com.lamz.reneapps.response
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class GetListResponse(
@@ -13,13 +15,13 @@ data class GetListResponse(
 	@field:SerializedName("message")
 	val message: String
 )
-
+@Entity(tableName = "story")
 data class ListStoryItem(
 
 	@field:SerializedName("photoUrl")
 	val photoUrl: String   ,
 
-	@field:SerializedName("  ")
+	@field:SerializedName("createdAt")
 	val createdAt: String   ,
 
 	@field:SerializedName("name")
@@ -31,6 +33,7 @@ data class ListStoryItem(
 	@field:SerializedName("lon")
 	val lon: Double,
 
+	@PrimaryKey
 	@field:SerializedName("id")
 	val id: String,
 

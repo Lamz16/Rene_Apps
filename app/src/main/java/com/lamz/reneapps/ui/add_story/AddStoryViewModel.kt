@@ -22,18 +22,18 @@ class AddStoryViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     // with location
-    fun uploadImage(token: String, file: File, description: String, lat : String, lon : String) {
+    fun uploadImage(file: File, description: String, lat : String, lon : String) {
         viewModelScope.launch {
-            repository.uploadImage(token, file, description, lat, lon).asFlow().collect {
+            repository.uploadImage(file, description, lat, lon).asFlow().collect {
                 _upload.value = it
             }
         }
     }
 
     // without location
-    fun uploadImage(token: String, file: File, description: String) {
+    fun uploadImage(file: File, description: String) {
         viewModelScope.launch {
-            repository.uploadImage(token, file, description).asFlow().collect {
+            repository.uploadImage(file, description).asFlow().collect {
                 _upload.value = it
             }
         }

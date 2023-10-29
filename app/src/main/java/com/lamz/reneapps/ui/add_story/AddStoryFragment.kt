@@ -26,9 +26,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.lamz.reneapps.R
 import com.lamz.reneapps.data.ResultState
 import com.lamz.reneapps.databinding.FragmentAddStoryBinding
-import com.lamz.reneapps.ui.MainActivity
+import com.lamz.reneapps.ui.main.MainActivity
 import com.lamz.reneapps.ui.ViewModelFactory
 import com.lamz.reneapps.ui.maps.MapsActivity
+import com.lamz.reneapps.ui.welcome.WelcomeActivity
 
 class AddStoryFragment : Fragment(), OnMapReadyCallback {
 
@@ -58,7 +59,10 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getSession().observe(viewLifecycleOwner) { user ->
-            EXTRA_TOKEN = user.token
+            if (!user.isLogin){
+                startActivity(Intent(requireActivity(), WelcomeActivity::class.java))
+                activity?.finish()
+            }
             binding.uploadButton.setOnClickListener { getMyLastLocation() }
         }
 
@@ -165,6 +169,10 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
                             "getMylastLocation: ${location.latitude}, ${location.longitude}  "
                         )
                     } else {
+
+                        val intents = Intent(requireContext(), MapsActivity::class.java)
+                        startActivity(intents)
+
                         gpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
                         Toast.makeText(
@@ -177,8 +185,8 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
                         } else {
-                            val intents = Intent(requireContext(), MapsActivity::class.java)
-                            startActivity(intents)
+                            val intent = Intent(requireContext(), MapsActivity::class.java)
+                            startActivity(intent)
                         }
                     }
                 }
@@ -202,7 +210,7 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
             Log.d("Image File", "showImage: ${imageFile.path}")
             val description = binding.edtDescription.text.toString()
 
-            viewModel.uploadImage(EXTRA_TOKEN, imageFile, description)
+            viewModel.uploadImage( imageFile, description)
             viewModel.upload.observe(viewLifecycleOwner) { result ->
                 if (result != null) {
                     when (result) {
@@ -240,7 +248,6 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
             showLoading(true)
 
             viewModel.uploadImage(
-                EXTRA_TOKEN,
                 imageFile,
                 description,
                 lat, lon
@@ -270,10 +277,6 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
             }
 
         } ?: showToast(getString(R.string.empty_image_warning))
-    }
-
-    companion object {
-        private var EXTRA_TOKEN: String = "token"
     }
 
 

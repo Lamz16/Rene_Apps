@@ -30,6 +30,7 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding?.root)
         setUpView()
 
+
         binding?.swipe?.setOnRefreshListener {
             setUpView()
 
@@ -48,9 +49,10 @@ class DetailActivity : AppCompatActivity() {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             }
+            else{
             val detail = intent.getStringExtra(EXTRA_ID)
             if (detail != null) {
-                viewModel.getDetailStories(user.token, detail)
+                viewModel.getDetailStories(detail)
             }
 
             viewModel.detailStory.observe(this) { story ->
@@ -81,6 +83,7 @@ class DetailActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
         }
     }
 

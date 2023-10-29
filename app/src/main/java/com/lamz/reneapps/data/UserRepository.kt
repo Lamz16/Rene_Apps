@@ -3,12 +3,16 @@ package com.lamz.reneapps.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.liveData
 import com.google.gson.Gson
+import com.lamz.reneapps.api.ApiConfig
 import com.lamz.reneapps.api.ApiService
+import com.lamz.reneapps.data.database.StoryDatabase
+import com.lamz.reneapps.data.database.StoryRemoteMediator
 import com.lamz.reneapps.data.pref.UserModel
 import com.lamz.reneapps.data.pref.UserPreference
 import com.lamz.reneapps.response.DetailResponse
@@ -17,6 +21,8 @@ import com.lamz.reneapps.response.LoginResponse
 import com.lamz.reneapps.response.MapsResponse
 import com.lamz.reneapps.response.UploadRegisterResponse
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -25,6 +31,7 @@ import retrofit2.HttpException
 import java.io.File
 
 class UserRepository private constructor(
+    private val storyDatabase: StoryDatabase,
     private val userPreference: UserPreference,
     private val apiService: ApiService
 ) {
@@ -70,11 +77,14 @@ class UserRepository private constructor(
         }
     }
 
-    suspend fun getStoriesWithLocation(token: String): LiveData<ResultState<MapsResponse>> =
+    suspend fun getStoriesWithLocation(): LiveData<ResultState<MapsResponse>> =
         liveData {
             emit(ResultState.Loading)
             try {
-                val successResponse = apiService.getStoriesWithLocation("Bearer $token")
+                userPreference.getSession()
+                val user = runBlocking { userPreference.getSession().first() }
+                val apiService = ApiConfig.getApiService(user.token)
+                val successResponse = apiService.getStoriesWithLocation()
                 emit(ResultState.Success(successResponse))
             } catch (e: HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
@@ -85,21 +95,30 @@ class UserRepository private constructor(
             }
         }
 
-    fun getStories(token: String): LiveData<PagingData<ListStoryItem>> {
+    fun getStories(): LiveData<PagingData<ListStoryItem>> {
+        userPreference.getSession()
+        val user = runBlocking { userPreference.getSession().first() }
+        val apiService = ApiConfig.getApiService(user.token)
+        @OptIn(ExperimentalPagingApi::class)
         return Pager(
             config = PagingConfig(
                 pageSize = 5
             ),
+            remoteMediator = StoryRemoteMediator(storyDatabase, apiService),
             pagingSourceFactory = {
-                StoriesPagingSource(apiService, token)
+//                StoriesPagingSource(apiService)
+                storyDatabase.storyDao().getAllStory()
             }
         ).liveData
     }
 
-    suspend fun getDetailStories(token: String, id: String) = liveData {
+    suspend fun getDetailStories(id: String) = liveData {
         emit(ResultState.Loading)
         try {
-            val response = apiService.getDetailStories("Bearer $token", id)
+            userPreference.getSession()
+            val user = runBlocking { userPreference.getSession().first() }
+            val apiService = ApiConfig.getApiService(user.token)
+            val response = apiService.getDetailStories( id)
             emit(ResultState.Success(response))
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
@@ -112,7 +131,6 @@ class UserRepository private constructor(
 
     //    Dengan lokasi upload image nya
     suspend fun uploadImage(
-        token: String,
         imageFile: File,
         description: String,
         lat: String,
@@ -129,8 +147,11 @@ class UserRepository private constructor(
             requestImageFile
         )
         try {
+            userPreference.getSession()
+            val user = runBlocking { userPreference.getSession().first() }
+            val apiService = ApiConfig.getApiService(user.token)
             val successResponse =
-                apiService.uploadImage("Bearer $token", multipartBody, requestBody, lat, lon)
+                apiService.uploadImage(multipartBody, requestBody, lat, lon)
             emit(ResultState.Success(successResponse))
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
@@ -143,7 +164,7 @@ class UserRepository private constructor(
     }
 
     //    Tidak dengan lokasi upload image nya
-    suspend fun uploadImage(token: String, imageFile: File, description: String) = liveData {
+    suspend fun uploadImage( imageFile: File, description: String) = liveData {
         emit(ResultState.Loading)
         val requestBody = description.toRequestBody("text/plain".toMediaType())
         val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
@@ -153,8 +174,11 @@ class UserRepository private constructor(
             requestImageFile
         )
         try {
+            userPreference.getSession()
+            val user = runBlocking { userPreference.getSession().first() }
+            val apiService = ApiConfig.getApiService(user.token)
             val successResponse =
-                apiService.uploadImage("Bearer $token", multipartBody, requestBody)
+                apiService.uploadImage( multipartBody, requestBody)
             emit(ResultState.Success(successResponse))
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
@@ -172,11 +196,12 @@ class UserRepository private constructor(
         @Volatile
         private var instance: UserRepository? = null
         fun getInstance(
+            storyDatabase: StoryDatabase,
             userPreference: UserPreference,
             apiService: ApiService
         ): UserRepository =
             instance ?: synchronized(this) {
-                instance ?: UserRepository(userPreference, apiService)
+                instance ?: UserRepository(storyDatabase,userPreference, apiService)
             }.also { instance = it }
     }
 }

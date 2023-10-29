@@ -18,9 +18,9 @@ class MapsViewModel(private val repository: UserRepository) : ViewModel() {
     private val _location = MutableLiveData<ResultState<MapsResponse>>()
     val location: LiveData<ResultState<MapsResponse>> = _location
 
-    fun getStoriesWithLocation(token: String) {
+    fun getStoriesWithLocation() {
         viewModelScope.launch {
-            repository.getStoriesWithLocation(token).asFlow().collect{
+            repository.getStoriesWithLocation().asFlow().collect{
                 _location.value = it
             }
         }

@@ -21,9 +21,9 @@ class DetailViewModel(private val repository: UserRepository) : ViewModel() {
         return repository.getSession().asLiveData()
     }
 
-    fun getDetailStories(token : String, id: String) {
+    fun getDetailStories(id: String) {
         viewModelScope.launch {
-            repository.getDetailStories(token , id).asFlow().collect {
+            repository.getDetailStories(id).asFlow().collect {
                 _detailStory.value = it
             }
         }

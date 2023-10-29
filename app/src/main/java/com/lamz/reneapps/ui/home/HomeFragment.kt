@@ -87,8 +87,8 @@ class HomeFragment : Fragment() {
             adapter = storyAdapter
         }
 
-        viewModel.getSession().observe(viewLifecycleOwner) { user ->
-            viewModel.getStories(user.token).observe(viewLifecycleOwner) {
+        viewModel.getSession().observe(viewLifecycleOwner) {
+            viewModel.getStories().observe(viewLifecycleOwner) {
                 if (it != null) {
                     binding.tvError.visibility = View.GONE
                     storyAdapter.submitData(lifecycle, it)

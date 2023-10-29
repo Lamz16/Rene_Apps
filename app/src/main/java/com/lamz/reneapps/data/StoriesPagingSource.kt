@@ -6,7 +6,7 @@ import com.lamz.reneapps.api.ApiService
 import com.lamz.reneapps.response.ListStoryItem
 
 
-class StoriesPagingSource(private val apiService: ApiService, private val token: String) :
+class StoriesPagingSource(private val apiService: ApiService) :
     PagingSource<Int, ListStoryItem>() {
     private companion object {
         const val INITIAL_PAGE_INDEX = 1
@@ -16,7 +16,7 @@ class StoriesPagingSource(private val apiService: ApiService, private val token:
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ListStoryItem> {
         return try {
             val position = params.key ?: INITIAL_PAGE_INDEX
-            val responseData = apiService.getStories("Bearer $token", position, params.loadSize)
+            val responseData = apiService.getStories(position, params.loadSize)
             LoadResult.Page(
                 data = responseData.listStory,
                 prevKey = if (position == 1) null else position - 1,

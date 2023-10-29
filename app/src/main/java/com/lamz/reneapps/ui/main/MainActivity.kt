@@ -1,4 +1,4 @@
-package com.lamz.reneapps.ui
+package com.lamz.reneapps.ui.main
 
 import android.content.Intent
 import android.os.Build
@@ -14,9 +14,11 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.lamz.reneapps.R
 import com.lamz.reneapps.databinding.ActivityMainBinding
+import com.lamz.reneapps.ui.ViewModelFactory
 import com.lamz.reneapps.ui.home.HomeViewModel
 import com.lamz.reneapps.ui.welcome.WelcomeActivity
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

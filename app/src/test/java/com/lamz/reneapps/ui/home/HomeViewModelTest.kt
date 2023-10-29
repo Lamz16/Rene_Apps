@@ -39,8 +39,6 @@ class HomeViewModelTest {
 
     @Mock
     private lateinit var repository: UserRepository
-    private val token =
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLWs5dTdUNnFwTkU3bEVfWS0iLCJpYXQiOjE2OTc4Nzk5NTl9.VSjUz8Logi0UU_T-OHFPm81s_MmfhoGAhvTBrjFpFqY"
 
     @Test
     fun `when Get Story Should Not Null and Return Data`() = runTest {
@@ -52,9 +50,9 @@ class HomeViewModelTest {
         @Before
         homeViewModel = HomeViewModel(repository)
 
-        Mockito.`when`(repository.getStories(token)).thenReturn(expectedStory)
+        Mockito.`when`(repository.getStories()).thenReturn(expectedStory)
 
-        val actualStory: PagingData<ListStoryItem> = homeViewModel.getStories(token).getOrAwaitValue()
+        val actualStory: PagingData<ListStoryItem> = homeViewModel.getStories().getOrAwaitValue()
 
         val differ = AsyncPagingDataDiffer(
             diffCallback = ListStoriesAdapter.DIFF_CALLBACK,
@@ -77,9 +75,9 @@ class HomeViewModelTest {
         @Before
         homeViewModel = HomeViewModel(repository)
 
-        Mockito.`when`(repository.getStories(token)).thenReturn(expectedStory)
+        Mockito.`when`(repository.getStories()).thenReturn(expectedStory)
 
-        val actualStory: PagingData<ListStoryItem> = homeViewModel.getStories(token).getOrAwaitValue()
+        val actualStory: PagingData<ListStoryItem> = homeViewModel.getStories().getOrAwaitValue()
 
         val differ = AsyncPagingDataDiffer(
             diffCallback = ListStoriesAdapter.DIFF_CALLBACK,

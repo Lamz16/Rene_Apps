@@ -73,7 +73,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             } else {
-                viewModel.getStoriesWithLocation(user.token)
+                viewModel.getStoriesWithLocation()
                 viewModel.location.observe(this) { maps ->
                     if (maps != null) {
                         when (maps) {
@@ -131,7 +131,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 this.applicationContext,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        )    {
             mMap.isMyLocationEnabled = true
         } else {
             requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)

@@ -15,7 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import com.lamz.reneapps.data.ResultState
 import com.lamz.reneapps.data.pref.UserModel
 import com.lamz.reneapps.databinding.ActivityLoginBinding
-import com.lamz.reneapps.ui.MainActivity
+import com.lamz.reneapps.ui.main.MainActivity
 import com.lamz.reneapps.ui.ViewModelFactory
 import com.lamz.reneapps.ui.welcome.WelcomeActivity
 
