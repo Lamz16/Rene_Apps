@@ -63,11 +63,12 @@ class UserRepository private constructor(
 
     }
 
-    suspend fun loginAccount(name: String, password: String) = liveData {
+    suspend fun loginAccount(email: String, password: String) = liveData {
         emit(ResultState.Loading)
         try {
-            val successResponse = apiService.login(name, password)
+            val successResponse = apiService.login(email, password)
             emit(ResultState.Success(successResponse))
+            saveSession(UserModel(email,successResponse.loginResult.name, successResponse.loginResult.token))
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             val errorResponse = Gson().fromJson(errorBody, LoginResponse::class.java)

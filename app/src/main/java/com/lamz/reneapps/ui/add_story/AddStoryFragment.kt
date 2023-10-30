@@ -66,6 +66,7 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
             binding.uploadButton.setOnClickListener { getMyLastLocation() }
         }
 
+
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.cameraButton.setOnClickListener { startCamera() }
 
