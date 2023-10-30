@@ -30,6 +30,7 @@ import com.lamz.reneapps.ui.main.MainActivity
 import com.lamz.reneapps.ui.ViewModelFactory
 import com.lamz.reneapps.ui.maps.MapsActivity
 import com.lamz.reneapps.ui.welcome.WelcomeActivity
+import es.dmoral.toasty.Toasty
 
 class AddStoryFragment : Fragment(), OnMapReadyCallback {
 
@@ -125,7 +126,11 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        Toasty.success(requireActivity(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showToast2(message: String) {
+        Toasty.warning(requireActivity(), message, Toast.LENGTH_SHORT).show()
     }
 
     private val requestPermissionLauncher =
@@ -230,7 +235,7 @@ class AddStoryFragment : Fragment(), OnMapReadyCallback {
                         }
 
                         is ResultState.Error -> {
-                            showToast(result.error)
+                            showToast2(result.error)
                             showLoading(false)
                         }
                     }

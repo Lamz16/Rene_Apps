@@ -19,6 +19,7 @@ import com.lamz.reneapps.custom_view.MyEmailText
 import com.lamz.reneapps.data.ResultState
 import com.lamz.reneapps.databinding.ActivitySignUpBinding
 import com.lamz.reneapps.ui.ViewModelFactory
+import es.dmoral.toasty.Toasty
 
 class SignUpActivity : AppCompatActivity() {
     private var _binding: ActivitySignUpBinding? = null
@@ -111,7 +112,7 @@ class SignUpActivity : AppCompatActivity() {
                         }
 
                         is ResultState.Error -> {
-                            showToast(result.error)
+                            showToast2(result.error)
                             showLoading(false)
 
                         }
@@ -157,6 +158,10 @@ class SignUpActivity : AppCompatActivity() {
         binding?.progressIndicator?.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
     private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        Toasty.success(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showToast2(message: String) {
+        Toasty.error(this, message, Toast.LENGTH_SHORT).show()
     }
 }

@@ -18,6 +18,7 @@ import com.lamz.reneapps.databinding.ActivityLoginBinding
 import com.lamz.reneapps.ui.main.MainActivity
 import com.lamz.reneapps.ui.ViewModelFactory
 import com.lamz.reneapps.ui.welcome.WelcomeActivity
+import es.dmoral.toasty.Toasty
 
 class LoginActivity : AppCompatActivity() {
     private val viewModel by viewModels<LoginViewModel> {
@@ -143,7 +144,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        Toasty.success(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showToast2(message: String) {
+        Toasty.warning(this, message, Toast.LENGTH_SHORT).show()
     }
 
 }
