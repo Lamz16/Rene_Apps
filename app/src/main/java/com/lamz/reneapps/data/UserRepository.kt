@@ -2,6 +2,7 @@ package com.lamz.reneapps.data
 
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -20,6 +21,7 @@ import com.lamz.reneapps.response.ListStoryItem
 import com.lamz.reneapps.response.LoginResponse
 import com.lamz.reneapps.response.MapsResponse
 import com.lamz.reneapps.response.UploadRegisterResponse
+import com.lamz.reneapps.util.Event
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -35,6 +37,9 @@ class UserRepository private constructor(
     private val userPreference: UserPreference,
     private val apiService: ApiService
 ) {
+
+    private val _snackbarText = MutableLiveData<Event<String>>()
+    val snackbarText : LiveData<Event<String>> = _snackbarText
 
     suspend fun saveSession(user: UserModel) {
         userPreference.saveSession(user)
@@ -99,6 +104,7 @@ class UserRepository private constructor(
     fun getStories(): LiveData<PagingData<ListStoryItem>> {
         userPreference.getSession()
         val user = runBlocking { userPreference.getSession().first() }
+        _snackbarText.value = Event("Selamat Datang ${user.name}")
         val apiService = ApiConfig.getApiService(user.token)
         @OptIn(ExperimentalPagingApi::class)
         return Pager(

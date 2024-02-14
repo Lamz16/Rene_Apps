@@ -90,7 +90,11 @@ class HomeFragment : Fragment() {
         }
 
         viewModel.getSession().observe(viewLifecycleOwner) { user ->
-            showToast("Selamat Datang ${user.name}")
+            viewModel.snackbarText.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { text ->
+                    showToast(text)
+                }
+            }
             viewModel.getStories().observe(viewLifecycleOwner) {
                 if (it != null) {
                     binding.tvError.visibility = View.GONE

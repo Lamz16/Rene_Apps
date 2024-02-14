@@ -14,6 +14,10 @@ import com.lamz.reneapps.response.ListStoryItem
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: UserRepository) : ViewModel() {
+
+    val snackbarText = repository.snackbarText
+
+
     fun getSession() = repository.getSession().asLiveData()
     private val _story = MutableLiveData<ResultState<GetListResponse>>()
     val story: LiveData<ResultState<GetListResponse>> = _story
